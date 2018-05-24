@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<style>
+a:link {
+    color: green;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+a:visited {
+    color: black;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+a:hover {
+    color: blue;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+a:active {
+    color: black;
+    background-color: transparent;
+    text-decoration: none;
+}
+</style>
+  <head>
+    <meta charset="utf-8">
+    <title>Grafica Ultrasonido</title>
+  </head>
+  <body>
+    <canvas id="myChart"></canvas>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script src="/socket.io/socket.io.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      const socket = io();
+
+      var ctx = document.getElementById('myChart').getContext('2d');
+      var chart = new Chart(ctx, {
+          type: 'line',
+
+
+          data: {
+              datasets: [{
+                  label: "Distancia medida en cm",
+                  borderColor: 'rgb(0, 200, 50,0.8)',
+                  data: [],
+              }]
+          },
+
+          options: {
+            title: {
+                       display: true,
+                       text: 'Comunicacion Serial'
+                   }
+          }
+      });
+
+      let counter = 0 ;
+      socket.on('arduino:data', function (dataSerial) {
+        chart.data.labels.push(counter);
+        chart.data.datasets.forEach(dataset => {
+          dataset.data.push(dataSerial.value);
+        });
+        counter++;
+        chart.update();
+      });
+    </script>
+  </body>
+  <a href="/">Inicio</a>
+</html>
