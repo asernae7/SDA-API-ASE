@@ -17,25 +17,23 @@ app.get('/distancia', (req, res) => {
   res.sendFile(__dirname +'/distancia.html');
 });
 
-// static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Crear e inicializar el dispositivo serial
+// Definir puerto serial y velocidad de comunicacion
 const Readline = SerialPort.parsers.Readline;
 const mySerial = new SerialPort('COM4', {
   baudRate: 9600,
 });
 
-// Asegurar que se lea cada linea completa hasta el fin de linea
 const parser = new Readline();
 mySerial.pipe(parser);
 
-// Verificar comunicacion con el dispositivo
+//mensaje de verificacion de inicio de comunicacion
 mySerial.on('open', function () {
   console.log('Puerto abierto');
 });
 
-// Hacer cada vez que llegue un dato serial
+//envio de dato
 parser.on('data', function (data) {
   console.log(data.toString());
   io.emit('arduino:data', {
@@ -43,11 +41,12 @@ parser.on('data', function (data) {
   });
 });
 
-// Mostar mensaje de error si hay problemas con la conexion
+// Mendaje de error
 mySerial.on('err', function (data) {
   console.log(err.message);
 });
 
+//Mensaje de inicio y puerto en el cual se muestran los datos
 server.listen(8000, () => {
   console.log('Servidor en el puerto 8000');
 });
